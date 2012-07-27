@@ -1,1 +1,36 @@
-Primer repo!
+Introduccion...
+
+La idea de este programa es probar la capacidad de concurrencia del sistema mediante escritura y lectura de archivos en forma simultanea. Para ello se disparan N threads, cada uno de ellos escribira un archivo de longitud fija X y calculara el md5sum de los datos ESCRITOS. Luego, cada thread leera el archivo generado por el mismo y calculara nuevamente un md5sum pero esta vez en base a los datos LEIDOS por el mismo. 
+De esta manera es posible corroborar que puedan escribirse y leerse archivos correctamente en un ambiente tan concurrente como se lo desee.
+
+
+Compilando...
+
+Instalar:
+
+- openSSL: apt-get install openssl
+- libSSL: apt-get install libssl-dev
+
+Linkear con:
+
+libcrypto.so: -lcrypto
+libpthread.so: -lpthread
+
+
+Ejecutando...
+
+Este programita recibe tres parametros tres:
+
+1 - Cantidad de threads a lanzar. Numerico.
+2 - Tamaño de los archivos que se van a generar. Numerico.
+3 - Path donde se van a generar los archivos. Alfanumerico.
+
+Ejemplo: ./massive-file-creator 4 4 /home/utnso/workspace
+
+Dispara cuatro threads, cada uno de los cuales genera un archivo de tamaño 4kb.
+
+
+
+Nota: Todos los archivos generados terminan en ".test" para ser borrados facilmente.
+
+Por ejemplo usando "rm *.test" en la consola.
