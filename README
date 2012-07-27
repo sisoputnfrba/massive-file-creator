@@ -22,7 +22,7 @@ Ejecutando...
 Este programita recibe tres parametros tres:
 
 1 - Cantidad de threads a lanzar. Numerico.
-2 - Tamaño de los archivos que se van a generar. Numerico.
+2 - Tamaño en kilobytes de los archivos que se van a generar. Numerico.
 3 - Path donde se van a generar los archivos. Alfanumerico.
 
 Ejemplo: ./massive-file-creator 4 4 /home/utnso/workspace
