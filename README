@@ -21,8 +21,8 @@ Ejecutando...
 
 Este programita recibe cuatro parametros cuatro:
 
-1 - Cantidad de threads a lanzar. Numerico.
-2 - Tamaño en kilobytes de los archivos que se van a generar. Numerico.
+1 - Cantidad de threads a lanzar. Numerico. Maximo 256.
+2 - Tamaño en kilobytes de los archivos que se van a generar. Numerico. Maximo 10240 (10mb).
 3 - Path donde se van a generar los archivos. Alfanumerico.
 4 - Prefijo para los archivos generados. Alfanumerico.
 
