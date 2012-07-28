@@ -17,7 +17,8 @@
 #define SUCCESS 0
 #define MD5_OK 1
 
-#define DEFAULT_ARGS_AMOUNT 3
+#define DEFAULT_ARGS_AMOUNT 4
+#define MAX_THREADS_AMOUNT 256
 
 #define FILENAME_HEAD "file_"
 #define FILENAME_TAIL ".test"
@@ -36,6 +37,7 @@ typedef struct {
 	int file_len;
 	char* location;
 	int thread_number;
+	char* file_prefix;
 } thread_params;
 
 // Datos de configuracion general.
@@ -43,6 +45,7 @@ typedef struct {
 	int threads_amount;
 	int file_len;
 	char* location;
+	char* files_prefix;
 } global_config;
 
 // Estructura de retorno para threads
@@ -59,20 +62,22 @@ pthread_t* threads_create(global_config config);
 void* file_generate(void* args);
 void destroy_thread_params(thread_params* params);
 int threads_get_and_print_results(pthread_t* threads, int threads_amount,
-		char* location);
+		char* location, char* prefix);
 void threads_destroy(pthread_t* threads, int threads_amount);
-void build_file_name(char* filename, int file_id, char* path);
+void build_file_name(char* filename, int file_id, char* path, char* prefix);
 void self_terminate_as(int retcode, MD5_DIGEST digest_writen,
 		MD5_DIGEST digest_read);
 void fill_buffer(char* buffer, int len);
 int file_get_digest(char* filename, MD5_DIGEST digest);
 void print_result(thread_return ret_data);
 void print_result_line(thread_return* ret_data, int line_number,
-		char* location);
+		char* location, char* prefix);
 void print_md5sum(MD5_DIGEST md5sum);
 void print_result_header();
 void print_result_trailer();
 void release_thread_retdata(thread_return* ret_data);
 char* sanitize_location(char* location);
+long int sanitize_threads_amount(int actual_threads_amount);
+void print_a_global_header(global_config config);
 
 #endif /* MASSIVE_FILE_CREATOR_H_ */

@@ -14,7 +14,6 @@
 #include <openssl/md5.h>
 #include <unistd.h>
 
-
 /*------------------------------------------------------
  Proceso principal
  -----------------------------------------------------*/
@@ -24,14 +23,17 @@ int main(int argc, char **argv) {
 	pthread_t* threads;
 
 	if (get_params(argv + 1, argc - 1, &config) != SUCCESS) {
-		printf("Error en los argumentos recibidos.\n");
+		printf("Error en los argumentos recibidos. Ejemplo de uso:\n\n");
+		printf("./massive-file-creator 4 1024 ./home/ prefix_01_\n");
 		return EXIT_FAILURE;
 	}
+
+	print_a_global_header(config);
 
 	threads = threads_create(config);
 
 	threads_get_and_print_results(threads, config.threads_amount,
-			config.location);
+			config.location, config.files_prefix);
 
 	threads_destroy(threads, 0);
 
@@ -51,7 +53,8 @@ int get_params(char** params, int params_amount, global_config* config_data) {
 	for (i = 0; i < params_amount; i++) {
 		switch (i) {
 		case 0:
-			config_data->threads_amount = strtol(params[i], NULL, 10);
+			config_data->threads_amount = sanitize_threads_amount(
+					strtol(params[i], NULL, 10));
 			break;
 		case 1:
 			config_data->file_len = strtol(params[i], NULL, 10);
@@ -59,11 +62,13 @@ int get_params(char** params, int params_amount, global_config* config_data) {
 		case 2:
 			config_data->location = sanitize_location(params[i]);
 			break;
+		case 3:
+			config_data->files_prefix = strdup(params[i]);
+			break;
 		}
+
 	}
-
 	return SUCCESS;
-
 }
 
 pthread_t* threads_create(global_config config) {
@@ -99,15 +104,17 @@ thread_params* create_thread_params(global_config config, int thread_number) {
 	params->file_len = config.file_len;
 	params->location = config.location;
 	params->thread_number = thread_number;
+	params->file_prefix = config.files_prefix;
 
 	return params;
 }
 
-void build_file_name(char* filename, int file_id, char* path) {
+void build_file_name(char* filename, int file_id, char* path, char* prefix) {
 
 	char file_id_str[10];
 
 	strcpy(filename, path);
+	strcat(filename, prefix);
 	strcat(filename, FILENAME_HEAD);
 	sprintf(file_id_str, "%d", file_id);
 	strcat(filename, file_id_str);
@@ -131,7 +138,8 @@ void* file_generate(void* args) {
 	file_len = params->file_len;
 
 // Construir nombre de archivo.
-	build_file_name(filename, thread_number, params->location);
+	build_file_name(filename, thread_number, params->location,
+			params->file_prefix);
 
 	destroy_thread_params(params);
 
@@ -194,7 +202,7 @@ void destroy_thread_params(thread_params* params) {
 }
 
 int threads_get_and_print_results(pthread_t* threads, int threads_amount,
-		char* location) {
+		char* location, char* prefix) {
 
 	int i;
 	thread_return* ret_data;
@@ -214,7 +222,7 @@ int threads_get_and_print_results(pthread_t* threads, int threads_amount,
 			continue;
 		}
 
-		print_result_line(ret_data, i + 1, location);
+		print_result_line(ret_data, i + 1, location, prefix);
 
 		release_thread_retdata(ret_data);
 
@@ -228,7 +236,7 @@ int threads_get_and_print_results(pthread_t* threads, int threads_amount,
 
 void threads_destroy(pthread_t* threads, int threads_amount) {
 
-	//TODO: Mejorar esto, no es estrictamente necesario.. pero bue...
+//TODO: Mejorar esto, no es estrictamente necesario.. pero bue...
 
 	free(threads);
 }
@@ -307,10 +315,11 @@ int file_get_digest(char* filename, MD5_DIGEST digest) {
 	return SUCCESS;
 }
 
-void print_result_line(thread_return* ret_data, int line_number, char* location) {
+void print_result_line(thread_return* ret_data, int line_number, char* location,
+		char* prefix) {
 
 	char filename[FILENAME_LEN];
-	build_file_name(filename, line_number, location);
+	build_file_name(filename, line_number, location, prefix);
 
 	printf("%3d - Archivo: %s\n", line_number, filename);
 	printf("%3d - Se escribio con md5sum: ", line_number);
@@ -376,4 +385,23 @@ char* sanitize_location(char* location) {
 
 void destroy_params(global_config config) {
 	free(config.location);
+	free(config.files_prefix);
+}
+
+long int sanitize_threads_amount(int actual_threads_amount) {
+	if (actual_threads_amount > MAX_THREADS_AMOUNT) {
+		printf("La cantidad de threads se limita a %d", MAX_THREADS_AMOUNT);
+		return MAX_THREADS_AMOUNT;
+	} else
+		return actual_threads_amount;
+}
+
+void print_a_global_header(global_config config) {
+
+	printf("- Massive file creator -\n\n");
+	printf("Generando %d archivos de tamaño %dkb en la ruta \"%s\" usando el prefijo \"%s\"\n\n",
+			config.threads_amount,
+			config.file_len,
+			config.location,
+			config.files_prefix);
 }

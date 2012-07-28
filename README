@@ -19,15 +19,16 @@ libpthread.so: -lpthread
 
 Ejecutando...
 
-Este programita recibe tres parametros tres:
+Este programita recibe cuatro parametros cuatro:
 
 1 - Cantidad de threads a lanzar. Numerico.
 2 - Tamaño en kilobytes de los archivos que se van a generar. Numerico.
 3 - Path donde se van a generar los archivos. Alfanumerico.
+4 - Prefijo para los archivos generados. Alfanumerico.
 
-Ejemplo: ./massive-file-creator 4 4 /home/utnso/workspace
+Ejemplo: ./massive-file-creator 4 8 /home/utnso/workspace prefix_
 
-Dispara cuatro threads, cada uno de los cuales genera un archivo de tamaño 4kb.
+Dispara cuatro threads, cada uno de los cuales genera un archivo de tamaño 8kb, los nombres de los mismos empezaran con "prefix_". Por ejemplo: "prefix_file1.test".
 
 
 
