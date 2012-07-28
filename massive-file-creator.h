@@ -19,6 +19,7 @@
 
 #define DEFAULT_ARGS_AMOUNT 4
 #define MAX_THREADS_AMOUNT 256
+#define MAX_FILE_LEN 10 * 1024   //10mb
 
 #define FILENAME_HEAD "file_"
 #define FILENAME_TAIL ".test"
@@ -77,7 +78,8 @@ void print_result_header();
 void print_result_trailer();
 void release_thread_retdata(thread_return* ret_data);
 char* sanitize_location(char* location);
-long int sanitize_threads_amount(int actual_threads_amount);
+int sanitize_threads_amount(long int actual_threads_amount);
+int sanitize_file_len(long int actual_file_len);
 void print_a_global_header(global_config config);
 
 #endif /* MASSIVE_FILE_CREATOR_H_ */

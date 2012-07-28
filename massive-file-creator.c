@@ -57,7 +57,7 @@ int get_params(char** params, int params_amount, global_config* config_data) {
 					strtol(params[i], NULL, 10));
 			break;
 		case 1:
-			config_data->file_len = strtol(params[i], NULL, 10);
+			config_data->file_len = sanitize_file_len(strtol(params[i], NULL, 10));
 			break;
 		case 2:
 			config_data->location = sanitize_location(params[i]);
@@ -218,7 +218,7 @@ int threads_get_and_print_results(pthread_t* threads, int threads_amount,
 		}
 
 		if (ret_data->retcode != SUCCESS) {
-			printf("%d - El thread %lu termino con error.", i + 1, threads[i]); //TODO: Emprolijar y desacomplar
+			printf("%d - El thread %lu termino con error.\n", i + 1, threads[i]); //TODO: Emprolijar y desacomplar
 			continue;
 		}
 
@@ -388,12 +388,20 @@ void destroy_params(global_config config) {
 	free(config.files_prefix);
 }
 
-long int sanitize_threads_amount(int actual_threads_amount) {
+int sanitize_threads_amount(long int actual_threads_amount) {
 	if (actual_threads_amount > MAX_THREADS_AMOUNT) {
-		printf("La cantidad de threads se limita a %d", MAX_THREADS_AMOUNT);
+		printf("La cantidad de threads se limita a %d.\n\n", MAX_THREADS_AMOUNT);
 		return MAX_THREADS_AMOUNT;
 	} else
 		return actual_threads_amount;
+}
+
+int sanitize_file_len(long int actual_file_len){
+	if (actual_file_len > MAX_FILE_LEN) {
+		printf("El tamano de los archivos se limita a %d.\n\n", MAX_FILE_LEN);
+		return MAX_FILE_LEN;
+	} else
+		return actual_file_len;
 }
 
 void print_a_global_header(global_config config) {
