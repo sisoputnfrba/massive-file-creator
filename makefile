@@ -1,3 +1,3 @@
 all:
-	gcc massive-file-creator.c -o mfc -lcrypto -lpthread
+	gcc massive-file-creator.c -o massive-file-creator -lcrypto -lpthread
 
